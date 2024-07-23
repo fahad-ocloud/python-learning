@@ -15,6 +15,7 @@ class Library:
         self.__transaction_path =  "../library_management_system/assets/transactions/transaction.bin"
     def add_new_book(self,title,content,author):
         book = Book(title,content,author,datetime.now(),datetime.now())
+        book.isAvailable = True
         self.add_book_to_file(book) 
     def del_book(self,book_id):
         found = self.__search_book_from_file(book_id,self.__active_path)
@@ -25,6 +26,8 @@ class Library:
                     self.update_book(book_id,found.title,found.content,found.author,found.createdAt,datetime.now())
                     self.__del_book_from_file(self.__active_path,book_id)
                     with open(self.__del_path,'ab') as df:
+                        found.isAvailable= False
+                        found.updatedAt = datetime.now()
                         df.write(self.struct.serialize_data(found))  
                         print("######Book Deleted Succesfully######")
                 elif check == 'n':
@@ -68,7 +71,8 @@ class Library:
                     book_data.append(book)
                     count+=1
                     id+=1
-                display_books(book_data)
+                if len(book_data)>0:
+                    display_books(book_data)
         else:
            print("!-!-!-!File Not Found!-!-!-!")
     def __update_book_to_file(self,book_id, updated_book, path):
@@ -91,7 +95,7 @@ class Library:
         with open(path,'wb') as f:
             f.write(new_data) 
     def __search_book_from_file(self,book_id,path):
-        with open(f"{self.__active_path}","r+b") as f:
+        with open(f"{path}","r+b") as f:
             f.seek(book_id * self.struct.cal_size())
             data = f.read(self.struct.cal_size())
             if data:    
@@ -101,8 +105,21 @@ class Library:
                 return False
     def search_book(self,book_id):
         return self.__search_book_from_file(book_id,self.__active_path)
-    def restore_book(self):
-        pass
+    def restore_book(self,book_id):
+        found = self.__search_book_from_file(book_id,self.__del_path)
+        if found:
+            check = self.confirm_check()
+            if check == 'y':
+                self.__del_book_from_file(self.__del_path,book_id)
+                found.isAvailable=True
+                self.add_book_to_file(found)
+                print("######Book Restored Succesfully######")
+            elif check == 'n':
+                print("######Returned to Main Menu######")
+            else:
+                print("!!!!!Invalid Entry!!!!!!")
+        else:
+            print("#### BOOK NOT FOUND ####")
     def confirm_check(self):
         return input("Are you sure. The Action cannot be revert if say yes (Y/N) : ")
     def check_available(self,book_id):
@@ -119,7 +136,6 @@ class Library:
             f.seek(book_id * self.struct.cal_size())
             f.write(self.struct.serialize_data(book))
         self.add_transaction(p1,book,book_id,1)
-    
     def add_transaction(self, p1 , book ,book_id, t_type):
         with open(self.__transaction_path,'ab') as tf:
             transaction = Transaction(book_id,book.title , p1.pid, p1.name,t_type )
@@ -143,4 +159,7 @@ class Library:
                     break
                 trans_data = Transaction.deserialize(data)
                 trans.append(trans_data)
-            display_transaction(trans)
+            if len(trans)>0:
+                display_transaction(trans)
+            else:
+                print("##########No Transactions Available##########")

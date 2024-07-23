@@ -15,7 +15,6 @@ d1 = pd.DataFrame(names)
 d2 = pd.DataFrame(ages)
 
 df = pd.merge(d1,d2,on='SSN',how='outer')
-
 df.set_index('SSN',inplace=True)
 
 print(df)

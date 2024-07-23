@@ -57,7 +57,7 @@ def main():
                     res = l1.update_book(book_id-1,title,content,author,flag.createdAt, datetime.now())
                     print("############# BOOK Updated #############")
             case 5:
-                book_id = int(input("Enter Book ID you want search(eg:10001) : "))
+                book_id = int(input("Enter Book ID you want search (eg:1) : "))
                 book = []
                 data = l1.search_book(book_id-1)
                 if data:
@@ -71,10 +71,11 @@ def main():
                     nest_option = nest_menu() 
                     match int(nest_option):
                         case 1:
-                            book_id = int(input("Enter the Book ID you want to Permanently DELETE(eg:10001) : "))
+                            book_id = int(input("Enter the Book ID you want to Permanently DELETE(eg:1) : "))
                             l1.permanent_del_book(book_id-1)
                         case 2:
-                            l1.restore_book()
+                            book_id = int(input("Enter the Book ID you want to restored(eg:1) : "))
+                            l1.restore_book(book_id-1)
                         case 3:
                             break
                         case _:
@@ -90,7 +91,9 @@ def main():
                         l1.return_book(p1 , found , book_id -1)
                         print(f"###### BOOK Return by {p1.name} ######")
                     else:
-                        print("!!!!!!!!!Invalid Person id!!!!!!!!!!!")
+                        print(f"!!!!!!!!! Invalid Person !!!!!!!!!!!")
+                        print(f"!!!!!!!!! This Book is not Borrowed by {p1.name} !!!!!!!!!!!")
+                        print(f"!!!!!!!!! This Book was Assigned to {found.borrowed_name} !!!!!!!!!!!") if found.borrowed_name!=""else None
                 else:
                     print("!!!!!!!!!! Book Not Found !!!!!!!!!")
             case 8:
