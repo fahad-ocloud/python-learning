@@ -86,14 +86,17 @@ class Library:
     def add_book_to_file(self,book:Book):
         with open(f"{self.__active_path}","ab") as f:
             f.write(self.struct.serialize_data(book))  
+    # def __del_book_from_file(self,path,book_id):
+    #     with open(path,'rb') as f:
+    #         data = f.read()
+    #     start_pos = book_id * self.struct.cal_size()
+    #     end_pos = start_pos + self.struct.cal_size()
+    #     new_data = data[:start_pos] + data[end_pos:]
+    #     with open(path,'wb') as f:
+    #         f.write(new_data)
     def __del_book_from_file(self,path,book_id):
-        with open(path,'rb') as f:
-            data = f.read()
-        start_pos = book_id * self.struct.cal_size()
-        end_pos = start_pos + self.struct.cal_size()
-        new_data = data[:start_pos] + data[end_pos:]
-        with open(path,'wb') as f:
-            f.write(new_data) 
+        with open(path,'r+b') as f:
+            f.seek(book_id*self.struct.cal_size()) 
     def __search_book_from_file(self,book_id,path):
         with open(f"{path}","r+b") as f:
             f.seek(book_id * self.struct.cal_size())

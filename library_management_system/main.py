@@ -15,7 +15,6 @@ def menu():
 9-View Transactions
 10-Exit
 
-
 Select any option: """)
     
 def nest_menu():
